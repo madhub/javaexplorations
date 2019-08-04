@@ -30,21 +30,28 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
 
 public class JwtCreate {
 
+    public static final String MARKER_START = "-----BEGIN RSA PRIVATE KEY-----";
+    public static final String MARKER_END = "-----END RSA PRIVATE KEY-----";
+
     public static void main(String[] args) throws JOSEException, IOException, NoSuchAlgorithmException, InvalidKeySpecException {
         //createJwtWithRSA();
-        byte[] bytes = Files.readAllBytes(Paths.get("E:\\dev\\java\\intellijws\\e2e-microservice\\demo\\demo\\target\\test-classes\\privateKey.pem"));
+        // sreadFromPem();
 
-        String start = "-----BEGIN RSA PRIVATE KEY-----";
-        String end = "-----END RSA PRIVATE KEY-----";
+
+    }
+
+    private static void readFromPem(String fileName) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+        byte[] bytes = Files.readAllBytes(Paths.get(fileName));
+
         String pemContent = new String(bytes, US_ASCII);
-        int markerStart = pemContent.indexOf(start);
+        int markerStart = pemContent.indexOf(MARKER_START);
         if (markerStart < 0) {
-            System.out.println("Invalid");
+            System.out.println("Invalid pem");
         } else {
-            String buf = pemContent.substring(markerStart + start.length());
-            int markerEnd = buf.indexOf(end);
+            String buf = pemContent.substring(markerStart + MARKER_START.length());
+            int markerEnd = buf.indexOf(MARKER_END);
             if (markerEnd < 0) {
-                System.out.println("Invalid");
+                System.out.println("Invalid pem");
             } else {
                 buf = buf.substring(0, markerEnd);
                 buf = buf.replaceAll("\\s", "");
@@ -56,8 +63,6 @@ public class JwtCreate {
                 System.out.println(privKey.getAlgorithm());
             }
         }
-
-
     }
 
     public static void createJwtWithRSA () throws JOSEException {
